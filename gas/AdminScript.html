@@ -1,0 +1,37 @@
+<script>
+(function(){
+  var works=[],busy=false,msg=document.getElementById('message');
+  var names={pending:'待審核',approved:'已公開',rejected:'未通過',hidden:'已下架',visual:'視覺藝術',music:'音樂藝術',perform:'表演藝術',tool:'教學工具',creation:'AI 創作'};
+  function say(s,error){msg.textContent=s;msg.className='message '+(error?'error':'success');}
+  function lock(value){busy=value;document.querySelectorAll('button').forEach(function(b){b.disabled=value;});}
+  function fail(err){lock(false);say(err.message||'操作失敗，請重試。',true);}
+  function node(tag,text,cls){var e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;}
+  function link(url,text){var a=node('a',text);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a;}
+  function load(){lock(true);say('讀取中…');google.script.run.withSuccessHandler(function(r){works=r.works;document.getElementById('identity').textContent='管理者：'+r.email;lock(false);say('共 '+works.length+' 件投稿。');render();}).withFailureHandler(fail).adminList();}
+  function render(){
+    var list=document.getElementById('list');list.replaceChildren();
+    var filter=document.getElementById('filter').value,shown=works.filter(function(w){return filter==='all'||w.status===filter;});
+    if(!shown.length){list.append(node('p','這個狀態沒有投稿。','card muted'));return;}
+    shown.forEach(function(w){
+      var card=node('article',null,'card');card.append(node('span',names[w.status]+' · '+names[w.cat]+' · '+names[w.kind],'badge'),node('h2',w.title));
+      card.append(node('p','署名：'+w.author+'　聯絡：'+w.email,'meta'),node('p','投稿時間：'+w.createdAt,'meta'));
+      if(w.url)card.append(link(w.url,'開啟作品／工具 ↗'));
+      if(w.fileId){var p=node('p');p.append(link('https:/'+'/drive.google.com/file/d/'+encodeURIComponent(w.fileId)+'/view','檢查附件：'+w.fileName));card.append(p);}
+      [['使用 AI',w.tool],['作品說明',w.description],['提示詞',w.prompt],['自己的貢獻',w.mine],['課堂使用方式',w.use],['適用對象',w.grade]].forEach(function(pair){if(pair[1]){card.append(node('h3',pair[0]),node('p',pair[1],'detail'));}});
+      var label=node('label','審核註記（不公開）'),note=node('textarea');note.maxLength=1000;note.value=w.reviewNote||'';label.append(note);card.append(label);
+      var actions=node('div',null,'actions');
+      [['approved','核准公開'],['rejected','不公開'],['hidden','下架']].forEach(function(pair){
+        var b=node('button',pair[1],pair[0]==='approved'?'':'secondary');b.type='button';b.addEventListener('click',function(){
+          if(busy)return;
+          if(pair[0]==='approved'&&!confirm('核准後將公開作品資料'+(w.fileId?'與附件':'')+'，確定公開？'))return;
+          lock(true);say('處理中…');google.script.run.withSuccessHandler(function(r){say(r.message);load();}).withFailureHandler(fail).adminReview(w.id,pair[0],note.value,w.updatedAt);
+        });actions.append(b);
+      });card.append(actions);list.append(card);
+    });
+  }
+  document.getElementById('reload').addEventListener('click',load);
+  document.getElementById('filter').addEventListener('change',render);
+  document.getElementById('setup').addEventListener('click',function(){if(busy)return;lock(true);say('正在建立全新的測試空間…');google.script.run.withSuccessHandler(function(r){lock(false);say(r.message);load();}).withFailureHandler(fail).setupWorkspace();});
+  load();
+}());
+</script>

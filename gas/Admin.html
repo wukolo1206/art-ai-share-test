@@ -1,0 +1,7 @@
+<!doctype html><html lang="zh-Hant"><head><base target="_top"><meta name="viewport" content="width=device-width,initial-scale=1"><?!= include_('Styles'); ?></head><body>
+<main><header><h1>投稿審核</h1><p class="muted">只有管理者能查看這裡。核准後，公開署名、作品及附件會顯示在網站。</p><p id="identity" class="meta"></p></header>
+<div class="actions"><button id="reload">重新載入</button><button id="setup" class="secondary">首次建立測試收件空間</button></div>
+<div class="filter"><label for="filter" style="margin:0">顯示</label><select id="filter"><option value="pending">待審核</option><option value="approved">已公開</option><option value="rejected">未通過</option><option value="hidden">已下架</option><option value="all">全部</option></select></div>
+<p id="message" class="message" role="status"></p><div id="list"></div></main>
+<?!= include_('AdminScript'); ?>
+</body></html>

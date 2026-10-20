@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AI × 藝術｜藝術領域 AI 運用教學網站</title>
+<title>AI × 藝術｜投稿分享測試站</title>
 <!-- 上傳到 GitHub 時，請把這個檔案命名為 index.html -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -192,6 +192,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .dlg dd{margin:2px 0 0;white-space:pre-wrap}
 footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:14px;text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.submit-frame{width:100%;height:1570px;border:0;border-radius:18px;background:var(--bg)}.submit-link{display:inline-block;margin:12px 0}.split{grid-template-columns:minmax(300px,420px) minmax(0,1fr)}.work .body{overflow-wrap:anywhere}.page>h1{margin-bottom:10px}@media(max-width:900px){.split{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -211,7 +212,7 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-s
   </div>
 </header>
 
-<main class="container">
+<main class="container"><p class="note" role="note">測試站：請使用虛構作品資料。投稿經管理者審核後才公開。</p><p id="cloud-status" role="status" class="msg">正在讀取公開作品…</p><button id="refresh-works" type="button" class="chip">重新整理作品</button>
 
   <!-- ===== 首頁 ===== -->
   <section class="page" id="home">
@@ -276,21 +277,8 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-s
     <div class="projects" id="projList"></div>
 
     <details class="adder">
-      <summary>➕ 新增一項成果（教師用）</summary>
-      <p class="secsub" style="margin-top:8px">填好後按「產生程式碼」，把產生的文字複製，貼到 index.html 裡 <code>PROJECTS</code> 清單中，再上傳到 GitHub，所有人就都看得到。按「先在本機預覽」只會顯示在這台電腦。</p>
-      <div class="adder-grid">
-        <div class="f"><label for="p-title">成果名稱</label><input type="text" id="p-title"></div>
-        <div class="f"><label for="p-cat">類別</label><select id="p-cat"><option value="visual">視覺藝術</option><option value="music">音樂藝術</option><option value="perform">表演藝術</option></select></div>
-        <div class="f full"><label for="p-url">網頁連結</label><input type="text" id="p-url" placeholder="https://"></div>
-        <div class="f full"><label for="p-ai">使用的 AI</label><small>用逗號分隔，例如：Claude, Gemini, Suno</small><input type="text" id="p-ai"></div>
-        <div class="f full"><label for="p-idea">設計理念</label><textarea id="p-idea"></textarea></div>
-        <div class="f full"><label for="p-use">課堂使用方式</label><textarea id="p-use" style="min-height:60px"></textarea></div>
-        <div class="f"><label for="p-icon">代表圖示（一個 emoji）</label><input type="text" id="p-icon" placeholder="🎨" maxlength="4"></div>
-        <div class="f"><label for="p-grade">適用對象</label><input type="text" id="p-grade" placeholder="國中八年級"></div>
-      </div>
-      <div class="row"><button class="btn" type="button" id="p-gen" style="--c:var(--brand);color:var(--brand-ink)">產生程式碼</button><button class="btn ghost" type="button" id="p-local" style="--c:var(--ink)">先在本機預覽</button></div>
-      <textarea id="p-code" readonly hidden aria-label="產生的程式碼" style="margin-top:12px;min-height:170px;font-family:ui-monospace,Consolas,monospace;font-size:13.5px"></textarea>
-      <div class="msg" id="p-msg" role="status"></div>
+      <summary>分享一項教學互動工具</summary>
+      <div id="tool-submission"></div>
     </details>
   </section>
 
@@ -314,337 +302,12 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-s
   </section>
 </main>
 
-<footer>AI × 藝術｜藝術領域 AI 運用教學網站</footer>
+<footer>AI × 藝術｜藝術領域 AI 運用教學網站 · 隔離測試版<br><a id="admin-link" target="_blank" rel="noopener">管理者登入</a></footer>
 
 <dialog id="dlg" aria-labelledby="dlgTitle"><div class="dlg" id="dlgBody"></div></dialog>
 
-<script>
-/* =========================================================
-   教師設定區：在這裡修改內容
-   ---------------------------------------------------------
-   PADLET：若想讓全班作品集中在同一處，請在 Padlet 建立三個牆，
-   把「分享 → 嵌入」取得的網址（https://padlet.com/embed/xxxx）貼在引號內。
-   留空則不顯示。
-   ========================================================= */
-const PADLET = {
-  visual:  "",
-  music:   "",
-  perform: ""
-};
-
-const CATS = {
-  visual:  {name:"視覺藝術", c:"var(--visual)",  cs:"var(--visual-soft)",
-            intro:"用 AI 探索色彩、構圖與風格，再加入自己的觀察與修改，完成一件屬於你的視覺作品。",
-            ideas:["情緒色彩海報","對比色實驗","我的心情自畫像","校園風景再想像","AI 草圖 + 手繪完稿"],
-            accept:"image/*,video/*"},
-  music:   {name:"音樂藝術", c:"var(--music)",   cs:"var(--music-soft)",
-            intro:"用 AI 發想旋律、節奏與歌詞，聆聽、比較並調整，說出這段音樂表達了什麼。",
-            ideas:["一分鐘心情配樂","為畫作配上音樂","校歌風格改編","節奏實驗","歌詞共創"],
-            accept:"audio/*,video/*"},
-  perform: {name:"表演藝術", c:"var(--perform)", cs:"var(--perform-soft)",
-            intro:"用 AI 協助劇本、分鏡、影像或配音，結合肢體與聲音表演，完成一段演出紀錄。",
-            ideas:["AI 分鏡短劇","動作偵測舞蹈","角色配音","情緒默劇","故事接龍劇本"],
-            accept:"video/*,image/*,audio/*"}
-};
-
-/* ---------------------------------------------------------
-   ② 教學用互動式 AI 工具設計成果
-   每一項用 { } 包起來，項目之間用逗號分隔。
-   cat：visual（視覺）/ music（音樂）/ perform（表演）
-   url：網頁連結，還沒有連結就留 ""
-   --------------------------------------------------------- */
-const PROJECTS = [
-  {cat:"visual", icon:"🐱", title:"對比色貓咪彩繪玻璃", url:"",
-   ai:["Claude"], grade:"國中八年級",
-   idea:"以彩繪玻璃貓咪為主題，讓學生在塗色遊戲中觀察與運用對比色（互補色），體驗色彩並置時產生的強烈視覺效果。",
-   use:"先講解色相環與互補色，再讓學生用遊戲完成配色，最後分享自己選色的理由。"},
-  {cat:"visual", icon:"🔴", title:"點點心情小卡", url:"",
-   ai:["Claude"], grade:"國中八年級",
-   idea:"結合草間彌生的圓點語彙與 SEL 自我覺察，學生選一個代表心情的顏色，依心情強弱選擇點點大小貼滿點點牆，並寫下心情紀錄。",
-   use:"課堂開始時進行情緒暖身，下載的心情小卡可上傳到 Padlet 分享。"},
-  {cat:"music", icon:"🎵", title:"（範例）情緒配樂實驗室", url:"",
-   ai:["Suno"], grade:"國中",
-   idea:"請在這裡寫下設計理念：想讓學生學到什麼？為什麼用 AI？",
-   use:"請在這裡寫下課堂使用方式。"},
-  {cat:"perform", icon:"🎭", title:"（範例）動作偵測舞蹈遊戲", url:"",
-   ai:["Teachable Machine"], grade:"國中",
-   idea:"請在這裡寫下設計理念：想讓學生學到什麼？為什麼用 AI？",
-   use:"請在這裡寫下課堂使用方式。"}
-];
-
-/* ---------------------------------------------------------
-   ① AI 工具介紹
-   --------------------------------------------------------- */
-const TOOLS = [
-  {cat:"visual", name:"Adobe Firefly", url:"https://firefly.adobe.com/", desc:"Adobe 的生成式 AI，可用文字產生圖像、擴展畫面或替換局部。", use:"用提示詞產生主視覺，再以生成填色修改局部。"},
-  {cat:"visual", name:"Canva 魔法工作室", url:"https://www.canva.com/", desc:"Canva 內建的 AI 功能，可生成圖像並直接排版成海報或簡報。", use:"製作情緒海報、展覽文宣。"},
-  {cat:"visual", name:"Google Gemini", url:"https://gemini.google.com/", desc:"Google 的 AI 助理，可對話生成與修改圖像，也能協助發想創作概念。", use:"以對話方式逐步修改作品構圖與色彩。"},
-  {cat:"visual", name:"ChatGPT", url:"https://chatgpt.com/", desc:"OpenAI 的 AI 助理，可生成圖像、修改圖片並協助撰寫創作說明。", use:"把草圖變成不同風格的版本做比較。"},
-  {cat:"visual", name:"Google Arts & Culture", url:"https://artsandculture.google.com/", desc:"Google 的藝術文化平台，收錄大量館藏與 AI 互動實驗。", use:"鑑賞名作、探索藝術風格與色彩。"},
-
-  {cat:"music", name:"Suno", url:"https://suno.com/", desc:"以文字描述產生含人聲的完整歌曲，可指定曲風與歌詞。", use:"輸入自己寫的歌詞，比較不同曲風的效果。"},
-  {cat:"music", name:"Google 音樂 AI（Lyria / Labs）", url:"https://labs.google/", desc:"Google 的音樂生成模型與實驗工具，可用文字產生樂段與配樂。", use:"為畫作或影片產生情境配樂。"},
-  {cat:"music", name:"AIVA", url:"https://www.aiva.ai/", desc:"偏向器樂與配樂的 AI 作曲工具，可選擇風格並編輯樂譜。", use:"創作古典、電影風格的純音樂。"},
-  {cat:"music", name:"BandLab", url:"https://www.bandlab.com/", desc:"線上錄音與編曲平台，提供 AI 起始樂段等輔助功能。", use:"以 AI 樂段為起點，自己加入錄音與編曲。"},
-  {cat:"music", name:"Udio", url:"https://www.udio.com/", desc:"AI 歌曲生成平台，近年因與唱片公司的授權合作，下載與匯出功能有限制。", use:"聆聽、比較 AI 歌曲的編曲與音色（使用前確認匯出規定）。"},
-
-  {cat:"perform", name:"Teachable Machine", url:"https://teachablemachine.withgoogle.com/", desc:"Google 的免費網頁工具，不寫程式就能訓練辨識圖像、聲音與姿勢的模型。", use:"訓練辨識舞蹈動作或表情，做成互動表演。"},
-  {cat:"perform", name:"Runway", url:"https://runwayml.com/", desc:"AI 影片生成與剪輯平台，可用文字或圖片產生動態影像。", use:"製作表演的背景影像或舞台視覺。"},
-  {cat:"perform", name:"Google Flow / Veo", url:"https://labs.google/", desc:"Google 的 AI 影片生成工具，可從文字或分鏡產生短片。", use:"將劇本分鏡轉成預覽影片。"},
-  {cat:"perform", name:"ElevenLabs", url:"https://elevenlabs.io/", desc:"AI 語音與音效工具，可做旁白、角色配音與音效。", use:"為短劇角色配音或製作音效（勿模仿真人聲音）。"},
-  {cat:"perform", name:"Canva 影片", url:"https://www.canva.com/", desc:"線上影片編輯，含 AI 剪輯與字幕等輔助功能。", use:"剪輯演出紀錄並加上字幕。"}
-];
-
-/* ========================================================= */
-
-const $ = (s, r=document) => r.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-
-/* ---- 工具卡片 ---- */
-function renderTools(filter){
-  $("#toolList").innerHTML = TOOLS.filter(t => filter==="all" || t.cat===filter).map(t => {
-    const c = CATS[t.cat];
-    return `<article class="tool" style="--c:${c.c};--cs:${c.cs}">
-      <span class="tag">${c.name}</span>
-      <h3>${esc(t.name)}</h3>
-      <p>${esc(t.desc)}</p>
-      <div class="use"><b>課堂運用：</b>${esc(t.use)}</div>
-      <a class="go" href="${t.url}" target="_blank" rel="noopener">前往官網 ↗</a>
-    </article>`;
-  }).join("");
-}
-document.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x===b ? "true":"false"));
-  renderTools(b.dataset.f);
-}));
-renderTools("all");
-
-/* ---- 互動工具成果 ---- */
-let projFilter = "all";
-function localProjects(){ try{ return JSON.parse(localStorage.getItem("ai-arts-projects") || "[]"); }catch(e){ return []; } }
-function saveLocalProjects(a){ try{ localStorage.setItem("ai-arts-projects", JSON.stringify(a)); return true; }catch(e){ return false; } }
-function safeUrl(u){ return /^https?:\/\//i.test(u || "") ? u : ""; }
-function renderProjects(){
-  const all = PROJECTS.map(p => ({...p, local:false})).concat(localProjects().map(p => ({...p, local:true})));
-  const list = all.filter(p => projFilter==="all" || p.cat===projFilter);
-  if(!list.length){ $("#projList").innerHTML = `<div class="empty">這個類別還沒有成果。</div>`; return; }
-  $("#projList").innerHTML = list.map(p => {
-    const c = CATS[p.cat] || CATS.visual, u = safeUrl(p.url);
-    return `<article class="proj" style="--c:${c.c};--cs:${c.cs}">
-      <div class="band"><div class="ic" aria-hidden="true">${esc(p.icon || "✨")}</div><div><div class="tag">${c.name}</div><h3>${esc(p.title)}</h3></div></div>
-      <div class="pb">
-        <div><div class="lbl">使用的 AI</div><div class="ais">${(p.ai||[]).map(a => `<span>${esc(a)}</span>`).join("") || "—"}</div></div>
-        <div><div class="lbl">設計理念</div><p>${esc(p.idea || "—")}</p></div>
-        ${p.use ? `<div><div class="lbl">課堂使用方式</div><p>${esc(p.use)}</p></div>` : ""}
-        ${p.grade ? `<div class="meta">適用對象：${esc(p.grade)}</div>` : ""}
-        <a class="btn sm open" style="--c:${c.c}" ${u ? `href="${esc(u)}" target="_blank" rel="noopener"` : `aria-disabled="true"`}>${u ? "開啟工具 ↗" : "連結準備中"}</a>
-        ${p.local ? `<span class="local">（僅在本機預覽）</span><button class="rm" type="button" data-t="${esc(p.title)}">移除預覽</button>` : ""}
-      </div></article>`;
-  }).join("");
-  $("#projList").querySelectorAll(".rm").forEach(b => b.addEventListener("click", () => {
-    saveLocalProjects(localProjects().filter(p => p.title !== b.dataset.t)); renderProjects();
-  }));
-}
-document.querySelectorAll(".wchip").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll(".wchip").forEach(x => x.setAttribute("aria-pressed", x===b ? "true":"false"));
-  projFilter = b.dataset.f; renderProjects();
-}));
-function readProjForm(){
-  const v = id => $("#p-"+id).value.trim();
-  return {cat:v("cat"), icon:v("icon") || "✨", title:v("title"), url:v("url"),
-    ai:v("ai").split(/[,，、]/).map(s => s.trim()).filter(Boolean), grade:v("grade"), idea:v("idea"), use:v("use")};
-}
-function pmsg(t, err){ $("#p-msg").textContent = t; $("#p-msg").className = "msg" + (err ? " err" : ""); }
-$("#p-gen").addEventListener("click", () => {
-  const p = readProjForm(); if(!p.title) return pmsg("請填寫成果名稱。", true);
-  if(p.url && !safeUrl(p.url)) return pmsg("網頁連結需以 https:// 開頭。", true);
-  const J = x => JSON.stringify(x);
-  const code = `  {cat:${J(p.cat)}, icon:${J(p.icon)}, title:${J(p.title)}, url:${J(p.url)},\n   ai:${J(p.ai)}, grade:${J(p.grade)},\n   idea:${J(p.idea)},\n   use:${J(p.use)}},`;
-  const box = $("#p-code"); box.value = code; box.hidden = false; box.focus(); box.select();
-  pmsg("已產生！複製上面的文字，貼到 PROJECTS 清單裡（第一個 [ 的下一行）。");
-});
-$("#p-local").addEventListener("click", () => {
-  const p = readProjForm(); if(!p.title) return pmsg("請填寫成果名稱。", true);
-  if(p.url && !safeUrl(p.url)) return pmsg("網頁連結需以 https:// 開頭。", true);
-  const a = localProjects(); a.push(p);
-  const ok = saveLocalProjects(a);
-  pmsg(ok ? "已加入本機預覽。" : "這個瀏覽器無法儲存預覽。", !ok);
-  renderProjects();
-});
-renderProjects();
-
-/* ---- 作品儲存（IndexedDB，存在此瀏覽器） ---- */
-let dbp = null;
-function db(){
-  if(dbp) return dbp;
-  dbp = new Promise((res, rej) => {
-    const r = indexedDB.open("ai-arts-works", 1);
-    r.onupgradeneeded = () => r.result.createObjectStore("works", {keyPath:"id"});
-    r.onsuccess = () => res(r.result);
-    r.onerror = () => rej(r.error);
-  });
-  return dbp;
-}
-async function tx(mode, fn){
-  const d = await db();
-  return new Promise((res, rej) => {
-    const t = d.transaction("works", mode); const s = t.objectStore("works");
-    const out = fn(s);
-    t.oncomplete = () => res(out && out.result !== undefined ? out.result : out);
-    t.onerror = () => rej(t.error);
-  });
-}
-const putWork = w => tx("readwrite", s => s.put(w));
-const delWork = id => tx("readwrite", s => s.delete(id));
-async function listWorks(cat){
-  const all = await tx("readonly", s => s.getAll());
-  return (all || []).filter(w => w.cat===cat).sort((a,b) => b.created - a.created);
-}
-
-/* ---- 分類頁 ---- */
-const urls = [];
-function mediaHTML(w, big){
-  if(!w.file) return `<span style="color:var(--muted);padding:30px">（沒有附檔）</span>`;
-  const u = URL.createObjectURL(w.file); urls.push(u);
-  const t = w.file.type || "";
-  if(t.startsWith("image/")) return `<img src="${u}" alt="${esc(w.title)}">`;
-  if(t.startsWith("video/")) return `<video src="${u}" controls playsinline preload="metadata"></video>`;
-  if(t.startsWith("audio/")) return `<audio src="${u}" controls preload="metadata"></audio>`;
-  return `<span>${esc(w.file.name)}</span>`;
-}
-function buildCat(key){
-  const c = CATS[key]; const el = $("#"+key);
-  el.style.setProperty("--c", c.c); el.style.setProperty("--cs", c.cs);
-  const toolOpts = TOOLS.filter(t => t.cat===key).map(t => `<option>${esc(t.name)}</option>`).join("");
-  el.innerHTML = `
-    <div class="cathead">
-      <h1>${c.name}</h1>
-      <p>${c.intro}</p>
-      <div class="ideas">${c.ideas.map(i => `<span>💡 ${i}</span>`).join("")}</div>
-    </div>
-    <div class="split">
-      <form class="upload" novalidate>
-        <h2>上傳 AI 創作</h2>
-        <p class="hint">作品會儲存在這台裝置的瀏覽器中。</p>
-        <div class="f"><label>作品檔案</label>
-          <label class="drop"><input type="file" accept="${c.accept}"><span class="dt">點這裡選擇檔案，或把檔案拖曳進來</span></label>
-          <div class="preview"></div></div>
-        <div class="f"><label for="${key}-title">作品名稱</label><input type="text" id="${key}-title" required></div>
-        <div class="f"><label for="${key}-author">創作者</label><input type="text" id="${key}-author" placeholder="班級、座號、姓名"></div>
-        <div class="f"><label for="${key}-tool">使用的 AI 工具</label>
-          <select id="${key}-tool">${toolOpts}<option>其他</option></select></div>
-        <div class="f"><label for="${key}-prompt">提示詞（Prompt）</label><small>你對 AI 說了什麼？可以寫下最有效的一次。</small><textarea id="${key}-prompt"></textarea></div>
-        <div class="f"><label for="${key}-mine">我自己的貢獻</label><small>哪些是你修改、挑選或親手完成的？</small><textarea id="${key}-mine"></textarea></div>
-        <div class="f"><label for="${key}-desc">作品解說</label><small>想表達什麼？用了哪些藝術元素？過程中的發現？</small><textarea id="${key}-desc" style="min-height:110px"></textarea></div>
-        <div class="row"><button class="btn" type="submit">儲存作品</button><button class="btn ghost" type="reset">清除</button></div>
-        <div class="msg" role="status"></div>
-      </form>
-      <div>
-        <div class="gal-top"><h2>作品集</h2>
-          <div class="row" style="margin:0"><button class="btn sm ghost exp" type="button">下載作品解說（文字）</button></div></div>
-        <div class="gallery" aria-live="polite"></div>
-        ${PADLET[key] ? `<div class="wall"><h2>全班作品牆</h2><p class="secsub">把作品與解說貼到全班共用的 Padlet。</p><iframe src="${esc(PADLET[key])}" title="${c.name} 全班作品牆" allow="camera;microphone;geolocation" loading="lazy"></iframe></div>` : ""}
-      </div>
-    </div>`;
-
-  const form = $("form", el), input = $("input[type=file]", el), drop = $(".drop", el), prev = $(".preview", el), msg = $(".msg", el);
-  let file = null;
-  const setFile = f => {
-    if(!f) return;
-    if(f.size > 80*1024*1024){ msg.textContent = "檔案超過 80MB，請壓縮或剪短後再上傳。"; msg.className="msg err"; return; }
-    file = f; $(".dt", drop).textContent = "已選擇：" + f.name;
-    prev.innerHTML = mediaHTML({file:f, title:f.name}); msg.textContent=""; msg.className="msg";
-  };
-  input.addEventListener("change", () => setFile(input.files[0]));
-  ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
-  ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
-  drop.addEventListener("drop", e => setFile(e.dataTransfer.files[0]));
-  form.addEventListener("reset", () => { file=null; prev.innerHTML=""; $(".dt", drop).textContent="點這裡選擇檔案，或把檔案拖曳進來"; msg.textContent=""; });
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    const v = id => $("#"+key+"-"+id).value.trim();
-    if(!v("title")){ msg.textContent="請填寫作品名稱。"; msg.className="msg err"; return; }
-    if(!file && !v("desc")){ msg.textContent="請上傳作品檔案或寫下作品解說。"; msg.className="msg err"; return; }
-    const w = {id: Date.now()+"-"+Math.random().toString(36).slice(2,7), cat:key, created:Date.now(),
-      title:v("title"), author:v("author"), tool:v("tool"), prompt:v("prompt"), mine:v("mine"), desc:v("desc"), file};
-    try{
-      await putWork(w); form.reset(); msg.textContent="已儲存！"; msg.className="msg"; renderGallery(key);
-    }catch(err){ msg.textContent="儲存失敗：瀏覽器空間可能不足，或在無痕模式下無法儲存。"; msg.className="msg err"; }
-  });
-  $(".exp", el).addEventListener("click", () => exportText(key));
-  renderGallery(key);
-}
-
-async function renderGallery(key){
-  const el = $("#"+key), g = $(".gallery", el);
-  let works = [];
-  try{ works = await listWorks(key); }catch(e){ g.innerHTML = `<div class="empty">此瀏覽器無法儲存作品（可能是無痕模式）。</div>`; return; }
-  if(!works.length){ g.innerHTML = `<div class="empty">還沒有作品，從左邊上傳第一件 ${CATS[key].name} 的 AI 創作吧！</div>`; return; }
-  g.innerHTML = works.map(w => `
-    <article class="work">
-      <div class="media">${mediaHTML(w)}</div>
-      <div class="body">
-        <span class="toolname">${esc(w.tool)}</span>
-        <h3>${esc(w.title)}</h3>
-        <div class="by">${esc(w.author || "未署名")}・${new Date(w.created).toLocaleDateString("zh-TW")}</div>
-        ${w.desc ? `<details><summary>作品解說</summary><p>${esc(w.desc)}</p></details>` : ""}
-        <div class="row" style="margin-top:auto;justify-content:space-between">
-          <button class="btn sm ghost view" type="button" data-id="${w.id}">完整檢視</button>
-          <button class="del" type="button" data-id="${w.id}">刪除</button>
-        </div>
-      </div>
-    </article>`).join("");
-  g.querySelectorAll(".del").forEach(b => b.addEventListener("click", async () => {
-    if(confirm("確定刪除這件作品嗎？")){ await delWork(b.dataset.id); renderGallery(key); }
-  }));
-  g.querySelectorAll(".view").forEach(b => b.addEventListener("click", () => openWork(works.find(w => w.id===b.dataset.id))));
-}
-
-function openWork(w){
-  const c = CATS[w.cat], d = $("#dlg"), body = $("#dlgBody");
-  body.style.setProperty("--c", c.c);
-  body.innerHTML = `
-    <div class="media">${mediaHTML(w, true)}</div>
-    <h2 id="dlgTitle">${esc(w.title)}</h2>
-    <div class="by" style="color:var(--muted)">${esc(w.author || "未署名")}・${c.name}・${esc(w.tool)}</div>
-    <dl>
-      ${w.prompt ? `<dt>提示詞</dt><dd>${esc(w.prompt)}</dd>` : ""}
-      ${w.mine ? `<dt>我自己的貢獻</dt><dd>${esc(w.mine)}</dd>` : ""}
-      ${w.desc ? `<dt>作品解說</dt><dd>${esc(w.desc)}</dd>` : ""}
-    </dl>
-    <div class="row"><button class="btn" type="button" id="dlgClose" style="--c:${c.c}">關閉</button></div>`;
-  $("#dlgClose").addEventListener("click", () => d.close());
-  d.showModal();
-}
-$("#dlg").addEventListener("click", e => { if(e.target.id==="dlg") e.target.close(); });
-$("#dlg").addEventListener("close", () => { $("#dlgBody").innerHTML = ""; });
-
-async function exportText(key){
-  const works = await listWorks(key);
-  if(!works.length){ alert("目前沒有作品可以下載。"); return; }
-  const lines = [`${CATS[key].name}｜AI 創作作品解說`, ""];
-  works.forEach((w,i) => {
-    lines.push(`【${i+1}】${w.title}`, `創作者：${w.author||"未署名"}`, `日期：${new Date(w.created).toLocaleDateString("zh-TW")}`,
-      `AI 工具：${w.tool}`, `檔案：${w.file ? w.file.name : "無"}`, `提示詞：${w.prompt||"—"}`, `我自己的貢獻：${w.mine||"—"}`, `作品解說：${w.desc||"—"}`, "");
-  });
-  const blob = new Blob(["\uFEFF"+lines.join("\n")], {type:"text/plain;charset=utf-8"});
-  const u = URL.createObjectURL(blob), a = document.createElement("a");
-  a.href = u; a.download = `${CATS[key].name}_AI創作解說.txt`; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(u), 4000);
-}
-
-Object.keys(CATS).forEach(buildCat);
-
-/* ---- 頁面切換 ---- */
-function route(){
-  const id = (location.hash || "#home").slice(1);
-  const target = document.getElementById(id) && document.getElementById(id).classList.contains("page") ? id : "home";
-  document.querySelectorAll("section.page").forEach(s => s.classList.toggle("on", s.id===target));
-  document.querySelectorAll("nav.main a").forEach(a => { if(a.getAttribute("href")==="#"+target) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
-  window.scrollTo(0,0);
-}
-window.addEventListener("hashchange", route);
-route();
-</script>
+<script src="site-config.js"></script>
+<script src="site-content.js"></script>
+<script src="site.js"></script>
 </body>
 </html>

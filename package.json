@@ -1,0 +1,1 @@
+{"name":"art-ai-share-test","private":true,"scripts":{"test":"node --test tests/*.test.cjs"},"devDependencies":{"@playwright/test":"^1.56.0"}}

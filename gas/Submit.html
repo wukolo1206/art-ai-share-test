@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-Hant"><head><base target="_top"><meta name="viewport" content="width=device-width,initial-scale=1"><?!= include_('Styles'); ?></head><body>
+<main id="submission-root" data-category="<?= category ?>" data-kind="<?= kind ?>"><form id="submission" class="card">
+<h1>分享你的作品</h1><p class="muted">送出後由管理者審核，通過後才公開。需要修改或撤下，請聯絡網站管理者。</p>
+<div class="grid">
+<div><label for="kind">投稿類型</label><select id="kind" name="kind"><option value="creation">AI 藝術創作</option><option value="tool">教學互動工具</option></select></div>
+<div><label for="cat">藝術分類</label><select id="cat" name="cat"><option value="visual">視覺藝術</option><option value="music">音樂藝術</option><option value="perform">表演藝術</option></select></div>
+<div class="full"><label for="title">作品名稱 *</label><input id="title" name="title" maxlength="120" required></div>
+<div><label for="author">公開署名 *</label><input id="author" name="author" maxlength="80" required placeholder="例如：某某老師"><small>會公開顯示，請勿填學生個資。</small></div>
+<div><label for="email">聯絡信箱 *</label><input id="email" name="email" type="email" maxlength="200" required><small>僅供管理者聯絡，不會公開。</small></div>
+<div class="full"><label for="url">作品／工具網址</label><input id="url" name="url" type="url" maxlength="1500" placeholder="https://"><small>請確認其他人能開啟。教學工具必填已上線網址。</small></div>
+<div class="full"><label for="file">作品附件（選填，最多 5MB）</label><input id="file" type="file" accept=".png,.jpg,.jpeg,.webp,.pdf,.mp3,.mp4"><small>圖片、PDF、MP3、MP4；大型影音請貼網址。HTML 工具請提供已上線連結。</small><p id="file-info" class="meta"></p></div>
+<div class="full"><label for="tool">使用的 AI 工具</label><input id="tool" name="tool" maxlength="200"></div>
+<div class="full"><label for="description">作品說明／設計理念 *</label><textarea id="description" name="description" maxlength="3000" required></textarea></div>
+<div class="full"><label for="prompt">提示詞（選填）</label><textarea id="prompt" name="prompt" maxlength="2000"></textarea></div>
+<div class="full"><label for="mine">自己的貢獻（選填）</label><textarea id="mine" name="mine" maxlength="2000"></textarea></div>
+<div class="full"><label for="use">課堂使用方式（選填）</label><textarea id="use" name="use" maxlength="1500"></textarea></div>
+<div class="full"><label for="grade">適用對象（選填）</label><input id="grade" name="grade" maxlength="100"></div>
+</div>
+<label><input type="checkbox" id="consent" required> 我有權分享這份作品，並同意審核通過後公開署名、作品內容與附件。</label>
+<label class="honeypot" aria-hidden="true">Website<input id="website" tabindex="-1" autocomplete="off"></label>
+<div class="actions"><button id="send" type="submit">送出投稿</button><button id="clear" type="reset" class="secondary">清除</button></div>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+</form><section id="receipt" class="card" hidden><h2>投稿已收到</h2><p>作品目前待審，尚未公開。</p><p id="receipt-id" class="meta"></p><button id="another" type="button">再投稿一件</button></section></main>
+<?!= include_('SubmitScript'); ?>
+</body></html>

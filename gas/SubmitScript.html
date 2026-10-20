@@ -1,0 +1,33 @@
+<script>
+(function(){
+  var form=document.getElementById('submission'),message=document.getElementById('message'),busy=false;
+  var initialCategory=document.getElementById('submission-root').dataset.category,initialKind=document.getElementById('submission-root').dataset.kind;
+  var requestId=makeId();
+  function makeId(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)+'-'+Math.random().toString(36).slice(2);}
+  document.getElementById('cat').value=initialCategory;
+  document.getElementById('kind').value=initialKind;
+  function show(text,error){message.textContent=text;message.className='message '+(error?'error':'success');}
+  function lock(value){busy=value;document.getElementById('send').disabled=value;document.getElementById('clear').disabled=value;}
+  document.getElementById('file').addEventListener('change',function(){var f=this.files[0];document.getElementById('file-info').textContent=f?f.name+'（'+(f.size/1024/1024).toFixed(2)+'MB）':'';});
+  function readFile(file){return new Promise(function(resolve,reject){
+    if(!file)return resolve(null);
+    if(file.size>5*1024*1024)return reject(new Error('附件超過 5MB，請改用作品連結。'));
+    var reader=new FileReader();reader.onload=function(){resolve({name:file.name,type:file.type,base64:reader.result.split(',')[1]});};reader.onerror=function(){reject(new Error('讀取附件失敗，請重新選擇。'));};reader.readAsDataURL(file);
+  });}
+  form.addEventListener('reset',function(e){if(busy){e.preventDefault();return;}show('',false);document.getElementById('file-info').textContent='';requestId=makeId();});
+  form.addEventListener('submit',function(e){
+    e.preventDefault();if(busy||!form.reportValidity())return;
+    var data={requestId:requestId,consent:document.getElementById('consent').checked,website:document.getElementById('website').value};
+    ['kind','cat','title','author','email','url','tool','description','prompt','mine','use','grade'].forEach(function(k){data[k]=document.getElementById(k).value.trim();});
+    lock(true);show('正在送出，請稍候…',false);
+    readFile(document.getElementById('file').files[0]).then(function(file){
+      data.file=file;
+      google.script.run.withSuccessHandler(function(result){
+        lock(false);if(!result||!result.ok){show('未確認收件成功，請保留內容再試。',true);return;}
+        form.reset();form.hidden=true;document.getElementById('receipt').hidden=false;document.getElementById('receipt-id').textContent='投稿編號：'+result.id;
+      }).withFailureHandler(function(err){lock(false);show(err.message||'送出失敗，內容已保留，請重試。',true);}).submitWork(data);
+    }).catch(function(err){lock(false);show(err.message,true);});
+  });
+  document.getElementById('another').addEventListener('click',function(){form.hidden=false;document.getElementById('receipt').hidden=true;document.getElementById('cat').value=initialCategory;document.getElementById('kind').value=initialKind;});
+}());
+</script>
