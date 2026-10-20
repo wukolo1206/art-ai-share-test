@@ -7,7 +7,7 @@
 - 新 GAS script：1Va-iP1rxudS0U84thVAaXtq02HBr5R8k8GPbmysTIw6ST8smvpXsNl-a。
 - 管理部署固定 ID：AKfycbwGPAHtgGgqHavlm9tH1gnwmuUeSHF19RFPoIjlzdvVHmzPp-WD_BEI75zHUa9Fuw1Q，版本 8，MYSELF，網址後加 ?page=admin。
 - 公開部署固定 ID：AKfycbzo90bk4xKjcsdXHUFg2ZEO5WiX9eD7VpovWqPy-b2kJxh4fLuaDKY60lOxl-3ECFAE，版本 9，ANYONE_ANONYMOUS。
-- 首次授權頁已在 Chrome 開啟，使用者尚未回覆完成授權。未初始化收件表／附件資料夾，未通過真實雲端驗收。
+- 使用者已完成 Google 授權，已透過管理頁初始化全新私人試算表與附件資料夾；資源 ID 保存在 .local/resources.json。僅作品網址流程通過真實雲端驗證，附件與嵌入尚未完整通過。
 
 ## 本次驗證
 
@@ -18,11 +18,23 @@
 - clasp 已確認管理者帳號為 wukolo1206@gmail.com，更新既有管理與公開部署成功。
 - 本機截圖與 browser-evidence.json 在 .local，僅為本機模擬預覽，不能當作雲端成功證據。
 
+### 真實雲端驗證（2026-10-20 授權後）
+
+- Chrome 公開投稿頁送出虛構作品，取得收據 f6f95ba2-6ede-4124-9c9d-1644af9921b6，後台收到 pending。
+- 不帶 Cookie 的 requests 呼叫公開 API：pending 時 0 件；核准後 1 件，無 email/reviewNote/requestId/status/row/fileId；下架後 0 件。
+- 管理者網頁核准與下架成功，本機網站使用真實 API 曾顯示該卡片。
+- 不帶 Cookie 讀取公開 deployment 的 ?page=admin，回傳「管理者專用」，拒絕匿名管理頁。
+- Drive API 核對新表／資料夾均僅 user owner 權限。
+- 實際送出使用已登入的 Chrome，不能據此宣稱未登入瀏覽器已成功送出；匿名 HTTP 僅確認表單頁可讀、公開 API 可讀與管理頁拒絕。
+- 附件選擇器逾時：需使用者在 ChatGPT Chrome extension 開啟 Allow access to file URLs，已提供官方指引；本次投稿未含附件。
+- 真實 localhost 外嵌 GAS frame 為空白，另開完整投稿頁正常。測試過隔離 cookie 的 credentialless iframe 亦空白，未確認原因。不要把這項宣稱為通過。
+- 詳細 JSON 證據在 .local/live-evidence.json；測試作品保留下架狀態，未刪除。
+
 ## 下次接續
 
-1. 使用者完成 Google 首次授權；進管理頁按「首次建立測試收件空間」，保存新資源 ID 至本機 .local，不回寫既有表格。
-2. 實際匿名瀏覽器投稿（含一件虛構 PNG），確認待審不公開；管理者核准後另一瀏覽器可讀，信箱／註記不外洩；下架後公開 API 與附件分享均回收。
-3. 補測未登入與其他 Google 帳號的後台拒絕；確認 iframe 在 GitHub Pages 上能正常送出。
+1. 取得明確 push 同意後，發布新 GitHub Pages 測試站；Google 專用資源已完成，無需再次初始化。
+2. 在 GitHub Pages HTTPS 環境確認 GAS iframe 會載入；若仍空白，診斷嵌入原因並提供可用的完整頁投稿入口，不能留大片空白當成完成。
+3. 檔案權限開啟後，用虛構 PNG 跑完整收件／核准／下架；補測真正未登入與另一個 Google 帳號的流程。
 4. 取得明確 push 同意後，git push origin HEAD:main；啟用該新 repo 的 Pages Actions（gh api repos/wukolo1206/art-ai-share-test/pages -X POST -f build_type=workflow）。核對 Actions 和實際 Pages 網址。
 5. 真實雲端驗收完成後，更新狀態與已知風險，再交給使用者測試。
 
