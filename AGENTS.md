@@ -2,8 +2,8 @@
 project: 藝術 AI 分享測試站
 category: GAS教學工具
 status: 開發中
-version: 0.1.0-test
-next_action: 取得確認後 push GitHub Pages，驗證 HTTPS 嵌入投稿與附件流程
+version: 0.1.1-test
+next_action: 用另一個 Google 帳號或未登入瀏覽器完成投稿驗收，再交由老師試用
 updated: 2026-10-20
 ---
 

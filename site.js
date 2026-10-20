@@ -22,7 +22,7 @@ function submissionPanel(container, category, kind) {
   }
   const url = new URL(SITE_CONFIG.publicAppUrl);
   url.searchParams.set('cat', category); url.searchParams.set('kind', kind);
-  container.innerHTML = `<p class="muted">投稿將送至管理者審核，不會立即公開。</p><a class="submit-link" href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">另開完整投稿表單 ↗</a><iframe class="submit-frame" title="${kind === 'tool' ? '教學互動工具' : CATS[category].name}投稿表單" src="${esc(url.href)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  container.innerHTML = `<div class="upload" style="position:static"><p>分享${kind === 'tool' ? '可在課堂使用的教學工具' : '你的 AI 藝術創作'}，讓更多老師看見。</p><p class="hint">填寫作品名稱、公開署名、聯絡信箱及作品說明，附上作品網址或檔案。送出後由管理者審核，通過後才會公開。</p><a class="btn submit-link" style="--c:var(--brand);color:var(--brand-ink);text-decoration:none" href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">填寫投稿表單 ↗</a><small>將另開完整投稿頁，方便填寫與選擇附件。</small></div>`;
 }
 
 function renderProjects() {
@@ -52,7 +52,7 @@ function buildCategory(cat) {
   const c = CATS[cat], el = $(`#${cat}`);
   el.style.setProperty('--c', c.c); el.style.setProperty('--cs', c.cs);
   el.innerHTML = `<div class="cathead"><h1>${c.name}</h1><p>${esc(c.intro)}</p><div class="ideas">${c.ideas.map(i => `<span>💡 ${esc(i)}</span>`).join('')}</div></div><div class="split"><section class="submission-panel"><h2>分享 AI 創作</h2><div class="form-host"></div></section><section><div class="gal-top"><h2>公開作品集</h2></div><div class="gallery" aria-live="polite"></div></section></div>`;
-  // 表單只在該分類首次開啟時載入，避免同時啟動多個 GAS iframe。
+  // 分類首次開啟時建立投稿入口，完整表單由獨立頁面提供。
   renderGallery(cat);
 }
 
@@ -83,11 +83,11 @@ function route() {
   const target = document.getElementById(id)?.classList.contains('page') ? id : 'home';
   document.querySelectorAll('section.page').forEach(s => s.classList.toggle('on',s.id === target));
   document.querySelectorAll('nav.main a').forEach(a => { if (a.hash === '#' + target) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
-  if (CATS[target] && !$(`#${target} .form-host iframe`)) submissionPanel($(`#${target} .form-host`),target,'creation');
+  if (CATS[target] && !$(`#${target} .form-host .submit-link`)) submissionPanel($(`#${target} .form-host`),target,'creation');
   window.scrollTo(0,0);
 }
 $('#tool-submission').closest('details').addEventListener('toggle', function() {
-  if (this.open && !$('#tool-submission iframe')) submissionPanel($('#tool-submission'),'visual','tool');
+  if (this.open && !$('#tool-submission .submit-link')) submissionPanel($('#tool-submission'),'visual','tool');
 });
 $('#admin-link').href = SITE_CONFIG.adminAppUrl;
 $('#refresh-works').addEventListener('click',loadWorks);

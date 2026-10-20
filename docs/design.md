@@ -4,7 +4,7 @@
 保留原網站分類與版型；投稿者不建立會員、不自行管理作品。管理者在網頁審核。先在 wukolo1206 帳號隔離測試，原站不變。
 
 ## 方案
-GitHub Pages 展示原站。每類投稿表單由 GAS HTML 提供並嵌入原站，保留原有欄位與配色，使用 google.script.run 可靠呼叫後端，避免跨站 POST 無法讀取成功回應。另提供新分頁填寫連結。公開卡片透過唯讀 JSONP 取得白名單欄位；所有值以 DOM/textContent 或跳脫後輸出。
+GitHub Pages 展示原站。每類投稿表單由 GAS HTML 以完整獨立頁提供；網站分類按鈕附帶類別與投稿類型。保留原有欄位與配色，使用 google.script.run 可靠呼叫後端，避免跨站 POST 無法讀取成功回應。0.1.1 因真實嵌入空白移除 iframe。公開卡片透過唯讀 JSONP 取得白名單欄位；所有值以 DOM/textContent 或跳脫後輸出。
 
 建立一份新的試算表及私人附件資料夾。投稿 pending；僅 approved 可公開。管理者頁使用 Google 帳號識別與伺服器 allowlist；另用 owner-only deployment 提供入口。公開部署下管理函式也必須逐次驗證身分。
 
