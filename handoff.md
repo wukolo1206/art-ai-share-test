@@ -13,10 +13,11 @@
 
 ### 0.1.1 發布與附件後端驗收
 
-- 使用者同意 push 後發布 Pages，第一輪 Actions run 39419185075 成功；發布白名單僅包含四個前端檔。
+- 使用者同意 push 後發布 Pages，Actions run 39419185075、39419960820 成功；發布白名單僅包含四個前端檔。
 - 真實 Pages HTTPS 嵌入仍空白，移除 iframe，改「填寫投稿表單」另開完整 GAS 頁，保留各類 cat/kind 參數。
-- Apps Script 編輯器執行 verification/attachment-lifecycle.gs，20:06:18 執行完成，五項實際服務檢查皆 true：receivedPrivate / approvedPublic / approvedListed / hiddenPrivate / hiddenRemoved。
-- 附件測試投稿 f85e79ab-d999-451a-b617-3c5043cf05e3 保留下架；驗收函式不屬公開部署，測試後已從 GAS HEAD 移除。
+- Apps Script 編輯器執行 verification/attachment-lifecycle.gs，20:09:53 使用可解碼 PNG 重跑完成，五項實際服務檢查皆 true：receivedPrivate / approvedPublic / approvedListed / hiddenPrivate / hiddenRemoved。
+- 附件測試投稿 656a2cd9-5501-42da-adf2-87468a2bbb11 保留下架，Drive MD5 與本機可解碼 PNG 一致，權限僅 owner；先前測試資料亦下架；驗收函式不屬公開部署，測試後已從 GAS HEAD 移除。
+- 前端 site.js 加版本查詢參數，避免瀏覽器 max-age=600 沿用舊版。
 - 後端公開／管理部署仍為版本 9／8，不需更新版本；本次功能變更在 GitHub 前端。
 
 

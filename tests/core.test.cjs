@@ -35,7 +35,7 @@ test('附件拒絕 HTML、假圖片與超過大小限制，接受有效 PNG',()=
  assert.throws(()=>context.validateFile_({name:'a.html',type:'text/html',base64:'PGh0bWw+'}));
  assert.throws(()=>context.validateFile_({name:'a.png',type:'image/png',base64:'PGh0bWw+'}));
  assert.throws(()=>context.validateFile_({name:'a.png',type:'image/png',base64:'A'.repeat(7*1024*1024)}));
- assert.equal(context.validateFile_({name:'a.png',type:'image/png',base64:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a2ioAAAAASUVORK5CYII='}).name,'a.png');
+ assert.equal(context.validateFile_({name:'a.png',type:'image/png',base64:'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEklEQVR4nGO8FGjFwMDAxAAGABEeAWGLN1lEAAAAAElFTkSuQmCC'}).name,'a.png');
 });
 test('JSONP 回呼僅允許固定字元，不能插入程式碼',()=>{
  assert.equal(typeof context.validCallback_,'function');

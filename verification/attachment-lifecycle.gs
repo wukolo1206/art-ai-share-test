@@ -6,7 +6,7 @@ function verifyAttachmentLifecycle() {
     title:'附件生命週期驗收（虛構測試）',author:'虛構測試教師',email:'attachment-test@example.com',
     tool:'系統驗收',description:'虛構 PNG，驗證實際 Drive 收件、公開與下架權限。',
     consent:true,file:{name:'test-art.png',type:'image/png',
-      base64:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a2ioAAAAASUVORK5CYII='}
+      base64:'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEklEQVR4nGO8FGjFwMDAxAAGABEeAWGLN1lEAAAAAElFTkSuQmCC'}
   });
   var r = records_().filter(function(w){return w.id === result.id;})[0];
   var file = DriveApp.getFileById(r.fileId);

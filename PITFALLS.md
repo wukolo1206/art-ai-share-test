@@ -55,3 +55,12 @@
 **未來避免**：跨網站嵌入需在真實 HTTPS 網址驗證，不能只靠 route fulfill 的模擬 HTML。
 
 ---
+
+## Pages 更新後瀏覽器仍使用舊版 JavaScript
+
+**現象**：Actions 已成功，重新整理頁面仍看到舊投稿 iframe；獨立 HTTP 已取得新程式。
+**原因**：Pages 靜態資源 Cache-Control 為 max-age=600，瀏覽器仍可沿用先前版本。
+**解法**：index.html 的 site.js 加上明確版本參數。
+**未來避免**：前端腳本更新時同步更換資源版本，實際瀏覽器核對新入口。
+
+---
