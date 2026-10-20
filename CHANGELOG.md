@@ -1,6 +1,7 @@
 # 版本歷程
 
 ## 0.1.1-test — GitHub Pages 測試站與完整投稿頁
+- 依使用者指定整理至 D:\備課ai\研習講義\藝術領域上傳通，完整保留 Git 紀錄、設定與驗收證據。
 - 發布 https://wukolo1206.github.io/art-ai-share-test/，Actions 測試與部署成功。
 - 真實 HTTPS 嵌入仍顯示空白，改採「填寫投稿表單」開啟完整 GAS 頁，移除空白 iframe。
 - 實際 GAS 附件驗收確認：私人收件、核准公開、下架回收權限及公開清單移除。

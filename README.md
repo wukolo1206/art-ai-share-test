@@ -1,4 +1,8 @@
-# 藝術 AI 分享測試站
+# 藝術領域上傳通
+
+主要工作目錄：`D:\備課ai\研習講義\藝術領域上傳通`。
+
+線上測試站：https://wukolo1206.github.io/art-ai-share-test/?v=0.1.1-test
 
 原版來源：[artjur0222-cmd/web](https://github.com/artjur0222-cmd/web)。保留版型、導覽、工具介紹與原站成果資料，改接共用投稿與網頁審核。
 

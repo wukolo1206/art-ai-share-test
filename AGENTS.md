@@ -1,5 +1,5 @@
 ---
-project: 藝術 AI 分享測試站
+project: 藝術領域上傳通
 category: GAS教學工具
 status: 開發中
 version: 0.1.1-test
@@ -7,7 +7,7 @@ next_action: 用另一個 Google 帳號或未登入瀏覽器完成投稿驗收�
 updated: 2026-10-20
 ---
 
-# 藝術 AI 分享測試站
+# 藝術領域上傳通
 
 沿用 artjur0222-cmd/web 版型；GitHub Pages 展示，GAS 收件與審核，Sheets/Drive 儲存。
 

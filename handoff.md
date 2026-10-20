@@ -1,8 +1,19 @@
 ## 目前狀態
 
+### 專案位置（使用者指定）
+
+- 主要專案：D:\備課ai\研習講義\藝術領域上傳通。
+- 從 C:\repos\art-ai-share-test 完整複製，含 .git、部署設定、.local 證據、備份與依賴；367 個檔案於複製後逐一 SHA-256 相同。
+- C 槽舊目錄被程序占用，未成功更名；保留為搬移前副本，之後僅以 D 槽主專案修改。舊目錄 .local/PROJECT_MOVED_TO.txt 已標示新位置。
+- 在 D 槽新位置重新執行 npm test 14/14、瀏覽器檢查 12/12 通過；Git 根目錄與 remote 正確。
+- 父儲存庫以 .git/info/exclude 排除本資料夾，避免把獨立 Git 專案收進講義 repo。
+- 線上測試站 https://wukolo1206.github.io/art-ai-share-test/?v=0.1.1-test 已確認新「填寫投稿表單」入口，可開啟完整 GAS 表單，頁內不再有空白 iframe。
+- 最後一次程式發布 Actions run 39420396504 成功，對應 241ca87。
+
+
 2026-10-20，0.1.1-test 已推送並發布 GitHub Pages，分支 feature/cloud-submissions 對應 origin/main。
 
-- 工作目錄：C:\repos\art-ai-share-test，從 artjur0222-cmd/web 複製；原站及研習講義既有工作未修改。
+- 工作目錄：D:\備課ai\研習講義\藝術領域上傳通，從 artjur0222-cmd/web 複製；原站及研習講義既有工作未修改。
 - 新 GitHub repo：https://github.com/wukolo1206/art-ai-share-test，使用者已同意推送，Pages 使用 Actions；網址 https://wukolo1206.github.io/art-ai-share-test/。
 - 新 GAS script：1Va-iP1rxudS0U84thVAaXtq02HBr5R8k8GPbmysTIw6ST8smvpXsNl-a。
 - 管理部署固定 ID：AKfycbwGPAHtgGgqHavlm9tH1gnwmuUeSHF19RFPoIjlzdvVHmzPp-WD_BEI75zHUa9Fuw1Q，版本 8，MYSELF，網址後加 ?page=admin。
